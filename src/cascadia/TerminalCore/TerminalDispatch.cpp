@@ -7,6 +7,7 @@
 
 using namespace Microsoft::Console;
 using namespace ::Microsoft::Terminal::Core;
+using namespace ::Microsoft::Console::Render;
 using namespace ::Microsoft::Console::VirtualTerminal;
 
 // NOTE:
@@ -18,77 +19,57 @@ TerminalDispatch::TerminalDispatch(ITerminalApi& terminalApi) noexcept :
 {
 }
 
-void TerminalDispatch::Execute(const wchar_t wchControl) noexcept
-{
-    _terminalApi.ExecuteChar(wchControl);
-}
-
-void TerminalDispatch::Print(const wchar_t wchPrintable) noexcept
+void TerminalDispatch::Print(const wchar_t wchPrintable)
 {
     _terminalApi.PrintString({ &wchPrintable, 1 });
 }
 
-void TerminalDispatch::PrintString(const std::wstring_view string) noexcept
+void TerminalDispatch::PrintString(const std::wstring_view string)
 {
     _terminalApi.PrintString(string);
 }
 
-bool TerminalDispatch::CursorPosition(const size_t line,
-                                      const size_t column) noexcept
-try
+bool TerminalDispatch::CursorPosition(VTInt line,
+                                      VTInt column)
 {
-    SHORT x{ 0 };
-    SHORT y{ 0 };
-
-    RETURN_BOOL_IF_FALSE(SUCCEEDED(SizeTToShort(column, &x)) &&
-                         SUCCEEDED(SizeTToShort(line, &y)));
-
-    RETURN_BOOL_IF_FALSE(SUCCEEDED(ShortSub(x, 1, &x)) &&
-                         SUCCEEDED(ShortSub(y, 1, &y)));
-
-    return _terminalApi.SetCursorPosition(x, y);
-}
-CATCH_LOG_RETURN_FALSE()
-
-bool TerminalDispatch::CursorVisibility(const bool isVisible) noexcept
-{
-    return _terminalApi.SetCursorVisibility(isVisible);
+    _terminalApi.SetCursorPosition({ column - 1, line - 1 });
+    return true;
 }
 
-bool TerminalDispatch::EnableCursorBlinking(const bool enable) noexcept
+bool TerminalDispatch::CursorVisibility(const bool isVisible)
 {
-    return _terminalApi.EnableCursorBlinking(enable);
+    _terminalApi.SetCursorVisibility(isVisible);
+    return true;
 }
 
-bool TerminalDispatch::CursorForward(const size_t distance) noexcept
-try
+bool TerminalDispatch::EnableCursorBlinking(const bool enable)
+{
+    _terminalApi.EnableCursorBlinking(enable);
+    return true;
+}
+
+bool TerminalDispatch::CursorForward(const VTInt distance)
 {
     const auto cursorPos = _terminalApi.GetCursorPosition();
-    const COORD newCursorPos{ cursorPos.X + gsl::narrow<short>(distance), cursorPos.Y };
-    return _terminalApi.SetCursorPosition(newCursorPos.X, newCursorPos.Y);
+    _terminalApi.SetCursorPosition({ cursorPos.X + distance, cursorPos.Y });
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
-bool TerminalDispatch::CursorBackward(const size_t distance) noexcept
-try
+bool TerminalDispatch::CursorBackward(const VTInt distance)
 {
     const auto cursorPos = _terminalApi.GetCursorPosition();
-    const COORD newCursorPos{ cursorPos.X - gsl::narrow<short>(distance), cursorPos.Y };
-    return _terminalApi.SetCursorPosition(newCursorPos.X, newCursorPos.Y);
+    _terminalApi.SetCursorPosition({ cursorPos.X - distance, cursorPos.Y });
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
-bool TerminalDispatch::CursorUp(const size_t distance) noexcept
-try
+bool TerminalDispatch::CursorUp(const VTInt distance)
 {
     const auto cursorPos = _terminalApi.GetCursorPosition();
-    const COORD newCursorPos{ cursorPos.X, cursorPos.Y + gsl::narrow<short>(distance) };
-    return _terminalApi.SetCursorPosition(newCursorPos.X, newCursorPos.Y);
+    _terminalApi.SetCursorPosition({ cursorPos.X, cursorPos.Y + distance });
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
-bool TerminalDispatch::LineFeed(const DispatchTypes::LineFeedType lineFeedType) noexcept
-try
+bool TerminalDispatch::LineFeed(const DispatchTypes::LineFeedType lineFeedType)
 {
     switch (lineFeedType)
     {
@@ -96,45 +77,42 @@ try
         // There is currently no need for mode-specific line feeds in the Terminal,
         // so for now we just treat them as a line feed without carriage return.
     case DispatchTypes::LineFeedType::WithoutReturn:
-        return _terminalApi.CursorLineFeed(false);
+        _terminalApi.CursorLineFeed(false);
+        return true;
     case DispatchTypes::LineFeedType::WithReturn:
-        return _terminalApi.CursorLineFeed(true);
+        _terminalApi.CursorLineFeed(true);
+        return true;
     default:
         return false;
     }
 }
-CATCH_LOG_RETURN_FALSE()
 
-bool TerminalDispatch::EraseCharacters(const size_t numChars) noexcept
-try
+bool TerminalDispatch::EraseCharacters(const VTInt numChars)
 {
-    return _terminalApi.EraseCharacters(numChars);
+    _terminalApi.EraseCharacters(numChars);
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
-bool TerminalDispatch::WarningBell() noexcept
-try
+bool TerminalDispatch::WarningBell()
 {
-    return _terminalApi.WarningBell();
+    _terminalApi.WarningBell();
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
-bool TerminalDispatch::CarriageReturn() noexcept
-try
+bool TerminalDispatch::CarriageReturn()
 {
     const auto cursorPos = _terminalApi.GetCursorPosition();
-    return _terminalApi.SetCursorPosition(0, cursorPos.Y);
+    _terminalApi.SetCursorPosition({ 0, cursorPos.Y });
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
-bool TerminalDispatch::SetWindowTitle(std::wstring_view title) noexcept
-try
+bool TerminalDispatch::SetWindowTitle(std::wstring_view title)
 {
-    return _terminalApi.SetWindowTitle(title);
+    _terminalApi.SetWindowTitle(title);
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
-bool TerminalDispatch::HorizontalTabSet() noexcept
+bool TerminalDispatch::HorizontalTabSet()
 {
     const auto width = _terminalApi.GetBufferSize().Dimensions().X;
     const auto column = _terminalApi.GetCursorPosition().X;
@@ -144,13 +122,13 @@ bool TerminalDispatch::HorizontalTabSet() noexcept
     return true;
 }
 
-bool TerminalDispatch::ForwardTab(const size_t numTabs) noexcept
+bool TerminalDispatch::ForwardTab(const VTInt numTabs)
 {
     const auto width = _terminalApi.GetBufferSize().Dimensions().X;
     const auto cursorPosition = _terminalApi.GetCursorPosition();
     auto column = cursorPosition.X;
     const auto row = cursorPosition.Y;
-    auto tabsPerformed = 0u;
+    VTInt tabsPerformed = 0;
     _InitTabStopsForWidth(width);
     while (column + 1 < width && tabsPerformed < numTabs)
     {
@@ -161,16 +139,17 @@ bool TerminalDispatch::ForwardTab(const size_t numTabs) noexcept
         }
     }
 
-    return _terminalApi.SetCursorPosition(column, row);
+    _terminalApi.SetCursorPosition({ column, row });
+    return true;
 }
 
-bool TerminalDispatch::BackwardsTab(const size_t numTabs) noexcept
+bool TerminalDispatch::BackwardsTab(const VTInt numTabs)
 {
     const auto width = _terminalApi.GetBufferSize().Dimensions().X;
     const auto cursorPosition = _terminalApi.GetCursorPosition();
     auto column = cursorPosition.X;
     const auto row = cursorPosition.Y;
-    auto tabsPerformed = 0u;
+    VTInt tabsPerformed = 0;
     _InitTabStopsForWidth(width);
     while (column > 0 && tabsPerformed < numTabs)
     {
@@ -181,25 +160,23 @@ bool TerminalDispatch::BackwardsTab(const size_t numTabs) noexcept
         }
     }
 
-    return _terminalApi.SetCursorPosition(column, row);
+    _terminalApi.SetCursorPosition({ column, row });
+    return true;
 }
 
-bool TerminalDispatch::TabClear(const DispatchTypes::TabClearType clearType) noexcept
+bool TerminalDispatch::TabClear(const DispatchTypes::TabClearType clearType)
 {
-    bool success = false;
     switch (clearType)
     {
     case DispatchTypes::TabClearType::ClearCurrentColumn:
-        success = _ClearSingleTabStop();
-        break;
+        _ClearSingleTabStop();
+        return true;
     case DispatchTypes::TabClearType::ClearAllColumns:
-        success = _ClearAllTabStops();
-        break;
+        _ClearAllTabStops();
+        return true;
     default:
-        success = false;
-        break;
+        return false;
     }
-    return success;
 }
 
 // Method Description:
@@ -208,61 +185,57 @@ bool TerminalDispatch::TabClear(const DispatchTypes::TabClearType clearType) noe
 // - tableIndex: The VT color table index
 // - color: The new RGB color value to use.
 // Return Value:
-// True if handled successfully. False otherwise.
+// - True.
 bool TerminalDispatch::SetColorTableEntry(const size_t tableIndex,
-                                          const DWORD color) noexcept
-try
+                                          const DWORD color)
 {
-    return _terminalApi.SetColorTableEntry(tableIndex, color);
+    _terminalApi.SetColorTableEntry(tableIndex, color);
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
-bool TerminalDispatch::SetCursorStyle(const DispatchTypes::CursorStyle cursorStyle) noexcept
-try
+bool TerminalDispatch::SetCursorStyle(const DispatchTypes::CursorStyle cursorStyle)
 {
-    return _terminalApi.SetCursorStyle(cursorStyle);
+    _terminalApi.SetCursorStyle(cursorStyle);
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
-bool TerminalDispatch::SetCursorColor(const DWORD color) noexcept
-try
+bool TerminalDispatch::SetCursorColor(const DWORD color)
 {
-    return _terminalApi.SetCursorColor(color);
+    _terminalApi.SetColorTableEntry(TextColor::CURSOR_COLOR, color);
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
-bool TerminalDispatch::SetClipboard(std::wstring_view content) noexcept
-try
+bool TerminalDispatch::SetClipboard(std::wstring_view content)
 {
-    return _terminalApi.CopyToClipboard(content);
+    _terminalApi.CopyToClipboard(content);
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
 // Method Description:
 // - Sets the default foreground color to a new value
 // Arguments:
 // - color: The new RGB color value to use, in 0x00BBGGRR form
 // Return Value:
-// True if handled successfully. False otherwise.
-bool TerminalDispatch::SetDefaultForeground(const DWORD color) noexcept
-try
+// - True.
+bool TerminalDispatch::SetDefaultForeground(const DWORD color)
 {
-    return _terminalApi.SetDefaultForeground(color);
+    _terminalApi.SetColorAliasIndex(ColorAlias::DefaultForeground, TextColor::DEFAULT_FOREGROUND);
+    _terminalApi.SetColorTableEntry(TextColor::DEFAULT_FOREGROUND, color);
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
 // Method Description:
 // - Sets the default background color to a new value
 // Arguments:
 // - color: The new RGB color value to use, in 0x00BBGGRR form
 // Return Value:
-// True if handled successfully. False otherwise.
-bool TerminalDispatch::SetDefaultBackground(const DWORD color) noexcept
-try
+// - True.
+bool TerminalDispatch::SetDefaultBackground(const DWORD color)
 {
-    return _terminalApi.SetDefaultBackground(color);
+    _terminalApi.SetColorAliasIndex(ColorAlias::DefaultBackground, TextColor::DEFAULT_BACKGROUND);
+    _terminalApi.SetColorTableEntry(TextColor::DEFAULT_BACKGROUND, color);
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
 // Method Description:
 // - Erases characters in the buffer depending on the erase type
@@ -270,38 +243,34 @@ CATCH_LOG_RETURN_FALSE()
 // - eraseType: the erase type (from beginning, to end, or all)
 // Return Value:
 // True if handled successfully. False otherwise.
-bool TerminalDispatch::EraseInLine(const DispatchTypes::EraseType eraseType) noexcept
-try
+bool TerminalDispatch::EraseInLine(const DispatchTypes::EraseType eraseType)
 {
     return _terminalApi.EraseInLine(eraseType);
 }
-CATCH_LOG_RETURN_FALSE()
 
 // Method Description:
 // - Deletes count number of characters starting from where the cursor is currently
 // Arguments:
 // - count, the number of characters to delete
 // Return Value:
-// True if handled successfully. False otherwise.
-bool TerminalDispatch::DeleteCharacter(const size_t count) noexcept
-try
+// - True.
+bool TerminalDispatch::DeleteCharacter(const VTInt count)
 {
-    return _terminalApi.DeleteCharacter(count);
+    _terminalApi.DeleteCharacter(count);
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
 // Method Description:
 // - Adds count number of spaces starting from where the cursor is currently
 // Arguments:
 // - count, the number of spaces to add
 // Return Value:
-// True if handled successfully, false otherwise
-bool TerminalDispatch::InsertCharacter(const size_t count) noexcept
-try
+// - True.
+bool TerminalDispatch::InsertCharacter(const VTInt count)
 {
-    return _terminalApi.InsertCharacter(count);
+    _terminalApi.InsertCharacter(count);
+    return true;
 }
-CATCH_LOG_RETURN_FALSE()
 
 // Method Description:
 // - Moves the viewport and erases text from the buffer depending on the eraseType
@@ -309,21 +278,19 @@ CATCH_LOG_RETURN_FALSE()
 // - eraseType: the desired erase type
 // Return Value:
 // True if handled successfully. False otherwise
-bool TerminalDispatch::EraseInDisplay(const DispatchTypes::EraseType eraseType) noexcept
-try
+bool TerminalDispatch::EraseInDisplay(const DispatchTypes::EraseType eraseType)
 {
     return _terminalApi.EraseInDisplay(eraseType);
 }
-CATCH_LOG_RETURN_FALSE()
 
 // - DECKPAM, DECKPNM - Sets the keypad input mode to either Application mode or Numeric mode (true, false respectively)
 // Arguments:
 // - applicationMode - set to true to enable Application Mode Input, false for Numeric Mode Input.
 // Return Value:
-// - True if handled successfully. False otherwise.
-bool TerminalDispatch::SetKeypadMode(const bool fApplicationMode) noexcept
+// - True.
+bool TerminalDispatch::SetKeypadMode(const bool applicationMode)
 {
-    _terminalApi.SetKeypadMode(fApplicationMode);
+    _terminalApi.SetInputMode(TerminalInput::Mode::Keypad, applicationMode);
     return true;
 }
 
@@ -331,10 +298,10 @@ bool TerminalDispatch::SetKeypadMode(const bool fApplicationMode) noexcept
 // Arguments:
 // - applicationMode - set to true to enable Application Mode Input, false for Normal Mode Input.
 // Return Value:
-// - True if handled successfully. False otherwise.
-bool TerminalDispatch::SetCursorKeysMode(const bool applicationMode) noexcept
+// - True.
+bool TerminalDispatch::SetCursorKeysMode(const bool applicationMode)
 {
-    _terminalApi.SetCursorKeysMode(applicationMode);
+    _terminalApi.SetInputMode(TerminalInput::Mode::CursorKey, applicationMode);
     return true;
 }
 
@@ -344,10 +311,11 @@ bool TerminalDispatch::SetCursorKeysMode(const bool applicationMode) noexcept
 // Arguments:
 // - reverseMode - set to true to enable reverse screen mode, false for normal mode.
 // Return Value:
-// - True if handled successfully. False otherwise.
-bool TerminalDispatch::SetScreenMode(const bool reverseMode) noexcept
+// - True.
+bool TerminalDispatch::SetScreenMode(const bool reverseMode)
 {
-    return _terminalApi.SetScreenMode(reverseMode);
+    _terminalApi.SetRenderMode(RenderSettings::Mode::ScreenReversed, reverseMode);
+    return true;
 }
 
 // Method Description:
@@ -356,10 +324,10 @@ bool TerminalDispatch::SetScreenMode(const bool reverseMode) noexcept
 // Arguments:
 // - win32InputMode - set to true to enable win32-input-mode, false to disable.
 // Return Value:
-// - True if handled successfully. False otherwise.
-bool TerminalDispatch::EnableWin32InputMode(const bool win32Mode) noexcept
+// - True.
+bool TerminalDispatch::EnableWin32InputMode(const bool win32Mode)
 {
-    _terminalApi.EnableWin32InputMode(win32Mode);
+    _terminalApi.SetInputMode(TerminalInput::Mode::Win32, win32Mode);
     return true;
 }
 
@@ -368,10 +336,10 @@ bool TerminalDispatch::EnableWin32InputMode(const bool win32Mode) noexcept
 //Arguments:
 // - enabled - true to enable, false to disable.
 // Return value:
-// True if handled successfully. False otherwise.
-bool TerminalDispatch::EnableVT200MouseMode(const bool enabled) noexcept
+// - True.
+bool TerminalDispatch::EnableVT200MouseMode(const bool enabled)
 {
-    _terminalApi.EnableVT200MouseMode(enabled);
+    _terminalApi.SetInputMode(TerminalInput::Mode::DefaultMouseTracking, enabled);
     return true;
 }
 
@@ -381,10 +349,10 @@ bool TerminalDispatch::EnableVT200MouseMode(const bool enabled) noexcept
 //Arguments:
 // - enabled - true to enable, false to disable.
 // Return value:
-// True if handled successfully. False otherwise.
-bool TerminalDispatch::EnableUTF8ExtendedMouseMode(const bool enabled) noexcept
+// - True.
+bool TerminalDispatch::EnableUTF8ExtendedMouseMode(const bool enabled)
 {
-    _terminalApi.EnableUTF8ExtendedMouseMode(enabled);
+    _terminalApi.SetInputMode(TerminalInput::Mode::Utf8MouseEncoding, enabled);
     return true;
 }
 
@@ -394,10 +362,10 @@ bool TerminalDispatch::EnableUTF8ExtendedMouseMode(const bool enabled) noexcept
 //Arguments:
 // - enabled - true to enable, false to disable.
 // Return value:
-// True if handled successfully. False otherwise.
-bool TerminalDispatch::EnableSGRExtendedMouseMode(const bool enabled) noexcept
+// - True.
+bool TerminalDispatch::EnableSGRExtendedMouseMode(const bool enabled)
 {
-    _terminalApi.EnableSGRExtendedMouseMode(enabled);
+    _terminalApi.SetInputMode(TerminalInput::Mode::SgrMouseEncoding, enabled);
     return true;
 }
 
@@ -406,23 +374,36 @@ bool TerminalDispatch::EnableSGRExtendedMouseMode(const bool enabled) noexcept
 //Arguments:
 // - enabled - true to enable, false to disable.
 // Return value:
-// True if handled successfully. False otherwise.
-bool TerminalDispatch::EnableButtonEventMouseMode(const bool enabled) noexcept
+// - True.
+bool TerminalDispatch::EnableButtonEventMouseMode(const bool enabled)
 {
-    _terminalApi.EnableButtonEventMouseMode(enabled);
+    _terminalApi.SetInputMode(TerminalInput::Mode::ButtonEventMouseTracking, enabled);
     return true;
 }
 
 //Routine Description:
 // Enable Any Event mode - send all mouse events to the input.
-
 //Arguments:
 // - enabled - true to enable, false to disable.
 // Return value:
-// True if handled successfully. False otherwise.
-bool TerminalDispatch::EnableAnyEventMouseMode(const bool enabled) noexcept
+// - True.
+bool TerminalDispatch::EnableAnyEventMouseMode(const bool enabled)
 {
-    _terminalApi.EnableAnyEventMouseMode(enabled);
+    _terminalApi.SetInputMode(TerminalInput::Mode::AnyEventMouseTracking, enabled);
+    return true;
+}
+
+// Method Description:
+// - Enables/disables focus event mode. A client may enable this if they want to
+//   receive focus events.
+// - ConPTY always enables this mode and never disables it. For more details, see GH#12900.
+// Arguments:
+// - enabled - true to enable, false to disable.
+// Return Value:
+// - True if handled successfully. False otherwise.
+bool TerminalDispatch::EnableFocusEventMode(const bool enabled)
+{
+    _terminalApi.SetInputMode(TerminalInput::Mode::FocusEvent, enabled);
     return true;
 }
 
@@ -432,10 +413,10 @@ bool TerminalDispatch::EnableAnyEventMouseMode(const bool enabled) noexcept
 //Arguments:
 // - enabled - true to enable, false to disable.
 // Return value:
-// True if handled successfully. False otherwise.
-bool TerminalDispatch::EnableAlternateScroll(const bool enabled) noexcept
+// - True.
+bool TerminalDispatch::EnableAlternateScroll(const bool enabled)
 {
-    _terminalApi.EnableAlternateScrollMode(enabled);
+    _terminalApi.SetInputMode(TerminalInput::Mode::AlternateScroll, enabled);
     return true;
 }
 
@@ -445,21 +426,73 @@ bool TerminalDispatch::EnableAlternateScroll(const bool enabled) noexcept
 //Arguments:
 // - enabled - true to enable, false to disable.
 // Return value:
-// True if handled successfully. False otherwise.
-bool TerminalDispatch::EnableXtermBracketedPasteMode(const bool enabled) noexcept
+// - True.
+bool TerminalDispatch::EnableXtermBracketedPasteMode(const bool enabled)
 {
     _terminalApi.EnableXtermBracketedPasteMode(enabled);
     return true;
 }
 
-bool TerminalDispatch::SetMode(const DispatchTypes::ModeParams param) noexcept
+bool TerminalDispatch::SetMode(const DispatchTypes::ModeParams param)
 {
     return _ModeParamsHelper(param, true);
 }
 
-bool TerminalDispatch::ResetMode(const DispatchTypes::ModeParams param) noexcept
+bool TerminalDispatch::ResetMode(const DispatchTypes::ModeParams param)
 {
     return _ModeParamsHelper(param, false);
+}
+
+// Routine Description:
+// - DSR - Reports status of a console property back to the STDIN based on the type of status requested.
+//       - This particular routine responds to ANSI status patterns only (CSI # n), not the DEC format (CSI ? # n)
+// Arguments:
+// - statusType - ANSI status type indicating what property we should report back
+// Return Value:
+// - True if handled successfully. False otherwise.
+bool TerminalDispatch::DeviceStatusReport(const DispatchTypes::AnsiStatusType statusType)
+{
+    auto success = false;
+
+    switch (statusType)
+    {
+    case DispatchTypes::AnsiStatusType::OS_OperatingStatus:
+        success = _OperatingStatus();
+        break;
+    case DispatchTypes::AnsiStatusType::CPR_CursorPositionReport:
+        success = _CursorPositionReport();
+        break;
+    }
+
+    return success;
+}
+
+// Routine Description:
+// - DSR-OS - Reports the operating status back to the input channel
+// Arguments:
+// - <none>
+// Return Value:
+// - True if handled successfully. False otherwise.
+bool TerminalDispatch::_OperatingStatus() const
+{
+    // We always report a good operating condition.
+    return _WriteResponse(L"\x1b[0n");
+}
+
+// Routine Description:
+// - DSR-CPR - Reports the current cursor position within the viewport back to the input channel
+// Arguments:
+// - <none>
+// Return Value:
+// - True if handled successfully. False otherwise.
+bool TerminalDispatch::_CursorPositionReport() const
+{
+    // Now send it back into the input channel of the console.
+    // First format the response string.
+    const auto pos = _terminalApi.GetCursorPosition();
+    // VT has origin at 1,1 where as we use 0,0 internally
+    const auto response = wil::str_printf<std::wstring>(L"\x1b[%d;%dR", pos.Y + 1, pos.X + 1);
+    return _WriteResponse(response);
 }
 
 // Method Description:
@@ -469,18 +502,20 @@ bool TerminalDispatch::ResetMode(const DispatchTypes::ModeParams param) noexcept
 // - params - the optional custom ID
 // Return Value:
 // - true
-bool TerminalDispatch::AddHyperlink(const std::wstring_view uri, const std::wstring_view params) noexcept
+bool TerminalDispatch::AddHyperlink(const std::wstring_view uri, const std::wstring_view params)
 {
-    return _terminalApi.AddHyperlink(uri, params);
+    _terminalApi.AddHyperlink(uri, params);
+    return true;
 }
 
 // Method Description:
 // - End a hyperlink
 // Return Value:
 // - true
-bool TerminalDispatch::EndHyperlink() noexcept
+bool TerminalDispatch::EndHyperlink()
 {
-    return _terminalApi.EndHyperlink();
+    _terminalApi.EndHyperlink();
+    return true;
 }
 
 // Method Description:
@@ -490,7 +525,7 @@ bool TerminalDispatch::EndHyperlink() noexcept
 // - string: contains the parameters that define which action we do
 // Return Value:
 // - true
-bool TerminalDispatch::DoConEmuAction(const std::wstring_view string) noexcept
+bool TerminalDispatch::DoConEmuAction(const std::wstring_view string)
 {
     unsigned int state = 0;
     unsigned int progress = 0;
@@ -535,7 +570,8 @@ bool TerminalDispatch::DoConEmuAction(const std::wstring_view string) noexcept
             // progress is greater than the maximum allowed value, clamp it to the max
             progress = TaskbarMaxProgress;
         }
-        return _terminalApi.SetTaskbarProgress(static_cast<DispatchTypes::TaskbarState>(state), progress);
+        _terminalApi.SetTaskbarProgress(static_cast<DispatchTypes::TaskbarState>(state), progress);
+        return true;
     }
     // 9 is SetWorkingDirectory, which informs the terminal about the current working directory.
     else if (subParam == 9)
@@ -547,18 +583,31 @@ bool TerminalDispatch::DoConEmuAction(const std::wstring_view string) noexcept
             // An example: 9;"D:/"
             if (path.at(0) == L'"' && path.at(path.size() - 1) == L'"' && path.size() >= 3)
             {
-                return _terminalApi.SetWorkingDirectory(path.substr(1, path.size() - 2));
+                _terminalApi.SetWorkingDirectory(path.substr(1, path.size() - 2));
             }
             else
             {
                 // If we fail to find the surrounding quotation marks, we'll give the path a try anyway.
                 // ConEmu also does this.
-                return _terminalApi.SetWorkingDirectory(path);
+                _terminalApi.SetWorkingDirectory(path);
             }
+            return true;
         }
     }
 
     return false;
+}
+
+// Routine Description:
+// - Helper to send a string reply to the input stream of the console.
+// - Used by various commands where the program attached would like a reply to one of the commands issued.
+// Arguments:
+// - reply - The reply string to transmit back to the input stream
+// Return Value:
+// - True if the string was sent to the connected application. False otherwise.
+bool TerminalDispatch::_WriteResponse(const std::wstring_view reply) const
+{
+    return _terminalApi.ReturnResponse(reply);
 }
 
 // Routine Description:
@@ -568,9 +617,9 @@ bool TerminalDispatch::DoConEmuAction(const std::wstring_view string) noexcept
 // - enable - True for set, false for unset.
 // Return Value:
 // - True if handled successfully. False otherwise.
-bool TerminalDispatch::_ModeParamsHelper(const DispatchTypes::ModeParams param, const bool enable) noexcept
+bool TerminalDispatch::_ModeParamsHelper(const DispatchTypes::ModeParams param, const bool enable)
 {
-    bool success = false;
+    auto success = false;
     switch (param)
     {
     case DispatchTypes::ModeParams::DECCKM_CursorKeysMode:
@@ -595,6 +644,9 @@ bool TerminalDispatch::_ModeParamsHelper(const DispatchTypes::ModeParams param, 
     case DispatchTypes::ModeParams::SGR_EXTENDED_MODE:
         success = EnableSGRExtendedMouseMode(enable);
         break;
+    case DispatchTypes::ModeParams::FOCUS_EVENT_MODE:
+        success = EnableFocusEventMode(enable);
+        break;
     case DispatchTypes::ModeParams::ALTERNATE_SCROLL:
         success = EnableAlternateScroll(enable);
         break;
@@ -610,6 +662,9 @@ bool TerminalDispatch::_ModeParamsHelper(const DispatchTypes::ModeParams param, 
     case DispatchTypes::ModeParams::W32IM_Win32InputMode:
         success = EnableWin32InputMode(enable);
         break;
+    case DispatchTypes::ModeParams::ASB_AlternateScreenBuffer:
+        success = enable ? UseAlternateScreenBuffer() : UseMainScreenBuffer();
+        break;
     default:
         // If no functions to call, overall dispatch was a failure.
         success = false;
@@ -618,24 +673,22 @@ bool TerminalDispatch::_ModeParamsHelper(const DispatchTypes::ModeParams param, 
     return success;
 }
 
-bool TerminalDispatch::_ClearSingleTabStop() noexcept
+void TerminalDispatch::_ClearSingleTabStop()
 {
     const auto width = _terminalApi.GetBufferSize().Dimensions().X;
     const auto column = _terminalApi.GetCursorPosition().X;
 
     _InitTabStopsForWidth(width);
     _tabStopColumns.at(column) = false;
-    return true;
 }
 
-bool TerminalDispatch::_ClearAllTabStops() noexcept
+void TerminalDispatch::_ClearAllTabStops()
 {
     _tabStopColumns.clear();
     _initDefaultTabStops = false;
-    return true;
 }
 
-void TerminalDispatch::_ResetTabStops() noexcept
+void TerminalDispatch::_ResetTabStops()
 {
     _tabStopColumns.clear();
     _initDefaultTabStops = true;
@@ -660,7 +713,7 @@ void TerminalDispatch::_InitTabStopsForWidth(const size_t width)
     }
 }
 
-bool TerminalDispatch::SoftReset() noexcept
+bool TerminalDispatch::SoftReset()
 {
     // TODO:GH#1883 much of this method is not yet implemented in the Terminal,
     // because the Terminal _doesn't need to_ yet. The terminal is only ever
@@ -672,23 +725,23 @@ bool TerminalDispatch::SoftReset() noexcept
     // This code is left here (from its original form in conhost) as a reminder
     // of what needs to be done.
 
-    bool success = CursorVisibility(true); // Cursor enabled.
-    // success = SetOriginMode(false) && success; // Absolute cursor addressing.
-    // success = SetAutoWrapMode(true) && success; // Wrap at end of line.
-    success = SetCursorKeysMode(false) && success; // Normal characters.
-    success = SetKeypadMode(false) && success; // Numeric characters.
+    CursorVisibility(true); // Cursor enabled.
+    // SetOriginMode(false); // Absolute cursor addressing.
+    // SetAutoWrapMode(true); // Wrap at end of line.
+    SetCursorKeysMode(false); // Normal characters.
+    SetKeypadMode(false); // Numeric characters.
 
     // // Top margin = 1; bottom margin = page length.
-    // success = _DoSetTopBottomScrollingMargins(0, 0) && success;
+    // _DoSetTopBottomScrollingMargins(0, 0);
 
     // _termOutput = {}; // Reset all character set designations.
     // if (_initialCodePage.has_value())
     // {
     //     // Restore initial code page if previously changed by a DOCS sequence.
-    //     success = _pConApi->SetConsoleOutputCP(_initialCodePage.value()) && success;
+    //     _pConApi->SetConsoleOutputCP(_initialCodePage.value());
     // }
 
-    success = SetGraphicsRendition({}) && success; // Normal rendition.
+    SetGraphicsRendition({}); // Normal rendition.
 
     // // Reset the saved cursor state.
     // // Note that XTerm only resets the main buffer state, but that
@@ -696,10 +749,10 @@ bool TerminalDispatch::SoftReset() noexcept
     // _savedCursorState.at(0) = {}; // Main buffer
     // _savedCursorState.at(1) = {}; // Alt buffer
 
-    return success;
+    return true;
 }
 
-bool TerminalDispatch::HardReset() noexcept
+bool TerminalDispatch::HardReset()
 {
     // TODO:GH#1883 much of this method is not yet implemented in the Terminal,
     // because the Terminal _doesn't need to_ yet. The terminal is only ever
@@ -710,35 +763,131 @@ bool TerminalDispatch::HardReset() noexcept
     // This code is left here (from its original form in conhost) as a reminder
     // of what needs to be done.
 
-    bool success = true;
-
     // // If in the alt buffer, switch back to main before doing anything else.
     // if (_usingAltBuffer)
     // {
-    //     success = _pConApi->PrivateUseMainScreenBuffer();
-    //     _usingAltBuffer = !success;
+    //     _pConApi->PrivateUseMainScreenBuffer();
+    //     _usingAltBuffer = false;
     // }
 
     // Sets the SGR state to normal - this must be done before EraseInDisplay
     //      to ensure that it clears with the default background color.
-    success = SoftReset() && success;
+    SoftReset();
 
     // Clears the screen - Needs to be done in two operations.
-    success = EraseInDisplay(DispatchTypes::EraseType::All) && success;
-    success = EraseInDisplay(DispatchTypes::EraseType::Scrollback) && success;
+    EraseInDisplay(DispatchTypes::EraseType::All);
+    EraseInDisplay(DispatchTypes::EraseType::Scrollback);
 
     // Set the DECSCNM screen mode back to normal.
-    success = SetScreenMode(false) && success;
+    SetScreenMode(false);
 
     // Cursor to 1,1 - the Soft Reset guarantees this is absolute
-    success = CursorPosition(1, 1) && success;
+    CursorPosition(1, 1);
 
     // Reset the mouse mode
-    success = EnableSGRExtendedMouseMode(false) && success;
-    success = EnableAnyEventMouseMode(false) && success;
+    EnableSGRExtendedMouseMode(false);
+    EnableAnyEventMouseMode(false);
 
     // Delete all current tab stops and reapply
     _ResetTabStops();
 
-    return success;
+    return true;
+}
+
+bool TerminalDispatch::WindowManipulation(const DispatchTypes::WindowManipulationType function,
+                                          const VTParameter /*parameter1*/,
+                                          const VTParameter /*parameter2*/)
+{
+    switch (function)
+    {
+    case DispatchTypes::WindowManipulationType::DeIconifyWindow:
+        _terminalApi.ShowWindow(true);
+        return true;
+    case DispatchTypes::WindowManipulationType::IconifyWindow:
+        _terminalApi.ShowWindow(false);
+        return true;
+    default:
+        return false;
+    }
+}
+
+// Routine Description:
+// - DECSC - Saves the current "cursor state" into a memory buffer. This
+//   includes the cursor position, origin mode, graphic rendition, and
+//   active character set.
+// Arguments:
+// - <none>
+// Return Value:
+// - True.
+bool TerminalDispatch::CursorSaveState()
+{
+    // TODO GH#3849: When de-duplicating this, the AdaptDispatch version of this
+    // is more elaborate.
+    const auto attributes = _terminalApi.GetTextAttributes();
+    const auto coordCursor = _terminalApi.GetCursorPosition();
+    // The cursor is given to us by the API as relative to current viewport top.
+
+    // VT is also 1 based, not 0 based, so correct by 1.
+    auto& savedCursorState = _savedCursorState.at(_usingAltBuffer);
+    savedCursorState.Column = coordCursor.X + 1;
+    savedCursorState.Row = coordCursor.Y + 1;
+    savedCursorState.Attributes = attributes;
+
+    return true;
+}
+
+// Routine Description:
+// - DECRC - Restores a saved "cursor state" from the DECSC command back into
+//   the console state. This includes the cursor position, origin mode, graphic
+//   rendition, and active character set.
+// Arguments:
+// - <none>
+// Return Value:
+// - True.
+bool TerminalDispatch::CursorRestoreState()
+{
+    // TODO GH#3849: When de-duplicating this, the AdaptDispatch version of this
+    // is more elaborate.
+    auto& savedCursorState = _savedCursorState.at(_usingAltBuffer);
+
+    auto row = savedCursorState.Row;
+    const auto col = savedCursorState.Column;
+
+    // The saved coordinates are always absolute, so we need reset the origin mode temporarily.
+    CursorPosition(row, col);
+
+    // Restore text attributes.
+    _terminalApi.SetTextAttributes(savedCursorState.Attributes);
+
+    return true;
+}
+
+// - ASBSET - Creates and swaps to the alternate screen buffer. In virtual terminals, there exists both a "main"
+//     screen buffer and an alternate. ASBSET creates a new alternate, and switches to it. If there is an already
+//     existing alternate, it is discarded.
+// Arguments:
+// - None
+// Return Value:
+// - True.
+bool TerminalDispatch::UseAlternateScreenBuffer()
+{
+    CursorSaveState();
+    _terminalApi.UseAlternateScreenBuffer();
+    _usingAltBuffer = true;
+    return true;
+}
+
+// Routine Description:
+// - ASBRST - From the alternate buffer, returns to the main screen buffer.
+//     From the main screen buffer, does nothing. The alternate is discarded.
+// Arguments:
+// - None
+// Return Value:
+// - True.
+bool TerminalDispatch::UseMainScreenBuffer()
+{
+    _terminalApi.UseMainScreenBuffer();
+    _usingAltBuffer = false;
+    CursorRestoreState();
+    return true;
 }

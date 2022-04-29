@@ -12,7 +12,6 @@ ACTCTXW
 activatable
 ACTIVEBORDER
 ACTIVECAPTION
-adaa
 ADDALIAS
 ADDREF
 addressof
@@ -53,6 +52,7 @@ apimswincoresynchl
 apiset
 APPBARDATA
 appconsult
+appcontainer
 APPICON
 appium
 applet
@@ -161,6 +161,7 @@ Borland
 BOTTOMLEFT
 BOTTOMRIGHT
 boutput
+boxheader
 BPBF
 bpp
 BPPF
@@ -189,7 +190,6 @@ cacafire
 callee
 capslock
 CARETBLINKINGENABLED
-carlos
 CARRIAGERETURN
 cascadia
 cassert
@@ -240,6 +240,7 @@ CHARSETINFO
 chcp
 checkbox
 checkboxes
+Checkin
 chh
 Childitem
 chk
@@ -288,8 +289,6 @@ codepage
 codepath
 codepoint
 codeproject
-coffgroup
-coffgrp
 coinit
 COLLECTIONURI
 colorizing
@@ -300,6 +299,7 @@ colorspaces
 colorspec
 colortable
 colortbl
+colortest
 colortool
 COLR
 combaseapi
@@ -320,6 +320,7 @@ concat
 concfg
 conclnt
 conddkrefs
+condev
 condrv
 conechokey
 conemu
@@ -385,12 +386,14 @@ CPINFOEX
 CPLINFO
 cplusplus
 cpp
+CPPARM
 CPPCORECHECK
 cppcorecheckrules
 cppm
 cpprest
 cpprestsdk
 cppwinrt
+CPPx
 CProc
 cpx
 crbegin
@@ -401,6 +404,7 @@ creativecommons
 cred
 cref
 crend
+Crisman
 CRLFs
 crloew
 Crt
@@ -470,6 +474,7 @@ cygwin
 CYHSCROLL
 CYMIN
 CYPADDEDBORDER
+CYRL
 CYSIZE
 CYSIZEFRAME
 CYSMICON
@@ -479,7 +484,6 @@ dai
 DATABLOCK
 DATAVIEW
 DATAW
-datetime
 DBatch
 dbcs
 DBCSCHAR
@@ -508,12 +512,14 @@ dealloc
 Debian
 debolden
 debugtype
+DECAC
 DECALN
 DECANM
 DECAUPSS
 DECAWM
 DECCKM
 DECCOLM
+DECCRA
 DECDHL
 decdld
 DECDLD
@@ -574,6 +580,7 @@ DEFFACE
 defing
 DEFPUSHBUTTON
 defterm
+deiconify
 DELAYLOAD
 deletable
 DELETEONRELEASE
@@ -608,6 +615,7 @@ DINLINE
 directio
 DIRECTX
 Dirs
+DISABLEDELAYEDEXPANSION
 DISABLENOSCROLL
 DISPLAYATTRIBUTE
 DISPLAYATTRIBUTEPROPERTY
@@ -632,13 +640,14 @@ doskey
 dotnet
 doubleclick
 downlevel
-dpg
+DPG
 dpi
 DPIAPI
 DPICHANGE
 DPICHANGED
 dpix
 dpiy
+dpnx
 DRAWFRAME
 DRAWITEM
 DRAWITEMSTRUCT
@@ -662,16 +671,17 @@ dwl
 DWLP
 dwm
 dwmapi
+DWMWA
 dword
 dwrite
 dwriteglyphrundescriptionclustermap
 dxgi
 dxgidwm
 dxinterop
+dxp
 dxsm
 dxttbmp
-eachother
-eae
+Dyreen
 eaf
 EASTEUROPE
 ECH
@@ -686,13 +696,13 @@ edputil
 edu
 Efast
 EHsc
+EINS
 EJO
 ELEMENTNOTAVAILABLE
 elems
 elif
 elseif
 emacs
-emplate
 EMPTYBOX
 enabledelayedexpansion
 endian
@@ -712,6 +722,7 @@ enumranges
 envvar
 eol
 EPres
+EQU
 ERASEBKGND
 errno
 errorlevel
@@ -761,11 +772,13 @@ fdw
 fesb
 FFDE
 FFrom
+fgbg
 FGCOLOR
 fgetc
 fgetwc
 FGHIJ
 fgidx
+FGs
 FILEDESCRIPTION
 fileno
 filepath
@@ -790,6 +803,7 @@ FIXEDCONVERTED
 FIXEDFILEINFO
 Flg
 flyout
+fmix
 fmodern
 fmtarg
 fmtid
@@ -850,7 +864,6 @@ gcy
 gdi
 gdip
 gdirenderer
-GENPROFILE
 geopol
 GETALIAS
 GETALIASES
@@ -908,6 +921,7 @@ getwriter
 GFEh
 Gfun
 gfx
+GGI
 GHIJK
 GHIJKL
 GHIJKLM
@@ -935,9 +949,12 @@ groupbox
 gset
 gsl
 GTP
+GTR
+guardxfg
 guc
 gui
 guidatom
+guiddef
 GValue
 GWL
 GWLP
@@ -968,7 +985,6 @@ hfont
 hfontresource
 hglobal
 hhh
-HHmm
 hhook
 hhx
 HIBYTE
@@ -998,7 +1014,6 @@ horiz
 HORZ
 hostable
 hostlib
-Hostx
 HPA
 HPAINTBUFFER
 HPCON
@@ -1049,6 +1064,7 @@ ico
 IComponent
 ICONERROR
 Iconified
+Iconify
 ICONINFORMATION
 IConsole
 ICONSTOP
@@ -1084,6 +1100,7 @@ ifndef
 IFont
 ifstream
 IGNOREEND
+IGNORELANGUAGE
 IHigh
 IHosted
 iid
@@ -1099,6 +1116,7 @@ Imatch
 ime
 Imm
 IMouse
+IMPEXP
 impl
 inbox
 inclusivity
@@ -1125,7 +1143,6 @@ INPUTPROCESSORPROFILE
 inputrc
 Inputreadhandledata
 INSERTMODE
-installationpath
 intellisense
 INTERACTIVITYBASE
 INTERCEPTCOPYPASTE
@@ -1144,6 +1161,7 @@ ioctl
 iomanip
 iostream
 iot
+ipa
 ipch
 ipconfig
 IPersist
@@ -1155,7 +1173,6 @@ IRaw
 IRead
 IReference
 IRender
-IRenderer
 IScheme
 ISelection
 IShell
@@ -1187,6 +1204,7 @@ IWin
 IWindow
 IXaml
 IXMP
+IXP
 ixx
 jconcpp
 JOBOBJECT
@@ -1232,12 +1250,14 @@ KLF
 KLMNO
 KLMNOPQRST
 KLMNOPQRSTQQQQQ
+KOK
 KPRIORITY
 KVM
 langid
 LANGUAGELIST
 lasterror
 lastexitcode
+LATN
 LAYOUTRTL
 LBN
 LBound
@@ -1354,6 +1374,7 @@ lstrcmp
 lstrcmpi
 LTEXT
 LTLTLTLTL
+ltrim
 ltype
 LUID
 lval
@@ -1380,6 +1401,7 @@ MAXDIMENSTRING
 maxing
 MAXLENGTH
 MAXSHORT
+maxval
 maxversiontested
 MAXWORD
 maybenull
@@ -1425,7 +1447,6 @@ mkdir
 MMBB
 mmcc
 MMCPL
-MMdd
 mmsystem
 MNC
 MNOPQ
@@ -1451,6 +1472,7 @@ mscorlib
 msctf
 msctls
 msdata
+MSDL
 msdn
 msft
 MSGCMDLINEF
@@ -1464,10 +1486,10 @@ MSGSELECTMODE
 msiexec
 MSIL
 msix
+mspartners
 msrc
 msvcrt
 MSVCRTD
-MSVS
 msys
 msysgit
 MTSM
@@ -1535,6 +1557,7 @@ NOCOLOR
 NOCOMM
 NOCONTEXTHELP
 NOCOPYBITS
+nodefaultlib
 nodiscard
 NODUP
 noexcept
@@ -1574,6 +1597,7 @@ nothrow
 NOTICKS
 NOTIMPL
 notin
+notmatch
 NOTNULL
 NOTOPMOST
 NOTRACK
@@ -1581,6 +1605,7 @@ NOTSUPPORTED
 nouicompat
 nounihan
 NOUPDATE
+novtable
 NOWAIT
 NOYIELD
 NOZORDER
@@ -1608,6 +1633,7 @@ NTVDM
 ntverp
 NTWIN
 nuget
+nugetversions
 nullability
 nullness
 nullonfailure
@@ -1680,8 +1706,8 @@ outfile
 Outof
 OUTOFCONTEXT
 OUTOFMEMORY
-outout
 Outptr
+outstr
 OVERLAPPEDWINDOW
 OWNDC
 OWNERDRAWFIXED
@@ -1758,6 +1784,7 @@ PFONTENUMDATA
 PFS
 pgd
 pgdn
+PGONu
 pgorepro
 pgort
 PGU
@@ -1781,6 +1808,9 @@ placeholders
 platforming
 playsound
 plist
+PLOC
+PLOCA
+PLOCM
 PLOGICAL
 plugin
 PMv
@@ -1792,6 +1822,7 @@ PNTSTATUS
 POBJECT
 Podcast
 POINTSLIST
+Poli
 POLYTEXTW
 popd
 POPF
@@ -1826,7 +1857,6 @@ pragma
 prc
 prealigned
 prebuilt
-precendence
 precomp
 prect
 prefast
@@ -1911,8 +1941,10 @@ qos
 QRSTU
 qsort
 queryable
+QUERYOPEN
 QUESTIONMARK
 quickedit
+QUZ
 QWER
 qzmp
 RAII
@@ -1977,7 +2009,6 @@ REGISTERVDM
 regkey
 REGSTR
 reingest
-Relayout
 RELBINPATH
 remoting
 renamer
@@ -1988,6 +2019,7 @@ reparenting
 replatformed
 Replymessage
 repositorypath
+Requiresx
 rescap
 Resequence
 RESETCONTENT
@@ -2040,6 +2072,8 @@ rtf
 RTFTo
 Rtl
 RTLREADING
+Rtn
+rtrim
 RTTI
 ruleset
 runas
@@ -2056,11 +2090,13 @@ runut
 runxamlformat
 rvalue
 RVERTICAL
+rvpa
 RWIN
 rxvt
 safearray
 SAFECAST
 safemath
+sapi
 sba
 SBCS
 SBCSDBCS
@@ -2162,13 +2198,14 @@ shlobj
 shlwapi
 SHORTPATH
 SHOWCURSOR
+SHOWDEFAULT
 SHOWMAXIMIZED
 SHOWMINNOACTIVE
+SHOWNA
 SHOWNOACTIVATE
 SHOWNORMAL
 SHOWWINDOW
 SHRT
-sid
 sidebyside
 SIF
 SIGDN
@@ -2199,7 +2236,6 @@ somefile
 SOURCEBRANCH
 sourced
 SOURCESDIRECTORY
-SPACEBAR
 spammy
 spand
 sprintf
@@ -2217,6 +2253,7 @@ srect
 srv
 srvinit
 srvpipe
+ssa
 ssh
 sstream
 stackoverflow
@@ -2232,6 +2269,7 @@ STARTWPARMSW
 Statusline
 stdafx
 STDAPI
+stdc
 stdcall
 stdcpp
 stderr
@@ -2256,6 +2294,7 @@ strrev
 strsafe
 strtok
 structs
+STUBHEAD
 STUVWX
 STX
 stylecop
@@ -2377,6 +2416,7 @@ TIcon
 tif
 tilunittests
 Timeline
+timelines
 titlebar
 TITLEISLINKNAME
 TJson
@@ -2393,10 +2433,12 @@ tofrom
 tokenhelpers
 tokenized
 tokenizing
+toolbar
 toolbars
 TOOLINFO
 Toolset
 tooltip
+TOOLWINDOW
 TOPDOWNDIB
 TOPLEFT
 toplevel
@@ -2422,6 +2464,7 @@ TREX
 triaged
 triaging
 TRIANGLESTRIP
+Tribool
 TRIMZEROHEADINGS
 truetype
 trx
@@ -2475,6 +2518,7 @@ uint
 uintptr
 ulcch
 ulong
+umd
 Unadvise
 unattend
 uncomment
@@ -2492,6 +2536,7 @@ UNICRT
 uninit
 uninitialize
 uninstall
+unintense
 Uniscribe
 unittest
 unittesting
@@ -2502,7 +2547,6 @@ unmark
 UNORM
 unparseable
 unpause
-Unregister
 unregistering
 untests
 untextured
@@ -2515,7 +2559,6 @@ upvote
 uri
 url
 urlencoded
-Urxvt
 USASCII
 usebackq
 USECALLBACK
@@ -2539,6 +2582,7 @@ USESHOWWINDOW
 USESIZE
 USESTDHANDLES
 ushort
+usp
 USRDLL
 utf
 utils
@@ -2549,6 +2593,7 @@ uuidv
 UVWX
 UVWXY
 UWA
+UWAs
 uwp
 uxtheme
 vals
@@ -2560,7 +2605,6 @@ Vcount
 vcpkg
 vcprintf
 vcproj
-vcvarsall
 vcxitems
 vcxproj
 vec
@@ -2600,6 +2644,7 @@ VSTS
 VSTT
 vstudio
 vswhere
+vtapi
 vtapp
 VTE
 VTID
@@ -2645,6 +2690,8 @@ wddmcon
 wddmconrenderer
 WDDMCONSOLECONTEXT
 wdm
+wdx
+webclient
 webpage
 website
 websocket
@@ -2678,6 +2725,7 @@ wincontypes
 WINCORE
 windbg
 WINDEF
+windev
 WINDIR
 windll
 WINDOWALPHA
@@ -2701,6 +2749,7 @@ windowsdeveloper
 windowsinternalstring
 WINDOWSIZE
 windowsx
+windowsterminal
 WINDOWTEXT
 windowtheme
 WINDOWTITLE
@@ -2719,6 +2768,7 @@ Winperf
 WInplace
 winres
 winrt
+winsdk
 wintelnet
 winternl
 winuser
@@ -2765,6 +2815,7 @@ WRITECONSOLE
 WRITECONSOLEINPUT
 WRITECONSOLEOUTPUT
 WRITECONSOLEOUTPUTSTRING
+wrkstr
 wrl
 wrp
 WRunoff
@@ -2813,9 +2864,9 @@ xdy
 XEncoding
 xes
 xff
+xfg
 XFile
 XFORM
-xIcon
 XManifest
 XMath
 XMFLOAT
@@ -2841,6 +2892,7 @@ xutr
 xvalue
 XVIRTUALSCREEN
 XWalk
+XTWINOPS
 Xzn
 yact
 YAML
@@ -2848,7 +2900,6 @@ YCast
 YCENTER
 YCount
 YDPI
-yIcon
 yml
 YOffset
 YPosition
@@ -2856,7 +2907,6 @@ YSize
 YSubstantial
 YVIRTUALSCREEN
 YWalk
-zamora
 ZCmd
 ZCtrl
 zsh

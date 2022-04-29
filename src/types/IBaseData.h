@@ -15,6 +15,7 @@ Author(s):
 #pragma once
 
 #include "inc/viewport.hpp"
+#include "../renderer/inc/FontInfo.hpp"
 
 class TextBuffer;
 
@@ -37,7 +38,6 @@ namespace Microsoft::Console::Types
         virtual COORD GetTextBufferEndPosition() const noexcept = 0;
         virtual const TextBuffer& GetTextBuffer() noexcept = 0;
         virtual const FontInfo& GetFontInfo() noexcept = 0;
-        virtual std::pair<COLORREF, COLORREF> GetAttributeColors(const TextAttribute& attr) const noexcept = 0;
 
         virtual std::vector<Microsoft::Console::Types::Viewport> GetSelectionRects() noexcept = 0;
 

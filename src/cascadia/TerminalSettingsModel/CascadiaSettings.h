@@ -57,8 +57,10 @@ namespace winrt::Microsoft::Terminal::Settings::Model::implementation
         void ApplyRuntimeInitialSettings();
         void MergeInboxIntoUserSettings();
         void FindFragmentsAndMergeIntoUserSettings();
+        void MergeFragmentIntoUserSettings(const winrt::hstring& source, const std::string_view& content);
         void FinalizeLayering();
         bool DisableDeletedProfiles();
+        bool FixupUserSettings();
 
         ParsedSettings inboxSettings;
         ParsedSettings userSettings;
@@ -82,8 +84,8 @@ namespace winrt::Microsoft::Terminal::Settings::Model::implementation
         void _parseFragment(const winrt::hstring& source, const std::string_view& content, ParsedSettings& settings);
         static JsonSettings _parseJson(const std::string_view& content);
         static winrt::com_ptr<implementation::Profile> _parseProfile(const OriginTag origin, const winrt::hstring& source, const Json::Value& profileJson);
-        void _appendProfile(winrt::com_ptr<implementation::Profile>&& profile, ParsedSettings& settings);
-        static void _addParentProfile(const winrt::com_ptr<implementation::Profile>& profile, ParsedSettings& settings);
+        void _appendProfile(winrt::com_ptr<Profile>&& profile, const winrt::guid& guid, ParsedSettings& settings);
+        void _addUserProfileParent(const winrt::com_ptr<implementation::Profile>& profile);
         void _executeGenerator(const IDynamicProfileGenerator& generator);
 
         std::unordered_set<std::wstring_view> _ignoredNamespaces;
@@ -133,6 +135,7 @@ namespace winrt::Microsoft::Terminal::Settings::Model::implementation
         winrt::hstring GetSerializationErrorMessage() const;
 
         // defterm
+        static std::wstring NormalizeCommandLine(LPCWSTR commandLine);
         static bool IsDefaultTerminalAvailable() noexcept;
         static bool IsDefaultTerminalSet() noexcept;
         winrt::Windows::Foundation::Collections::IObservableVector<Model::DefaultTerminal> DefaultTerminals() noexcept;
@@ -141,7 +144,6 @@ namespace winrt::Microsoft::Terminal::Settings::Model::implementation
 
     private:
         static const std::filesystem::path& _settingsPath();
-        static std::wstring _normalizeCommandLine(LPCWSTR commandLine);
 
         winrt::com_ptr<implementation::Profile> _createNewProfile(const std::wstring_view& name) const;
         Model::Profile _getProfileForCommandLine(const winrt::hstring& commandLine) const;
