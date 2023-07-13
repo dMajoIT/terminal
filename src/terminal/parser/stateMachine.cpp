@@ -18,8 +18,7 @@ StateMachine::StateMachine(std::unique_ptr<IStateMachineEngine> engine, const bo
     _parameters{},
     _parameterLimitReached(false),
     _oscString{},
-    _cachedSequence{ std::nullopt },
-    _processingIndividually(false)
+    _cachedSequence{ std::nullopt }
 {
     _ActionClear();
 }
@@ -365,18 +364,6 @@ static constexpr bool _isApcIndicator(const wchar_t wch) noexcept
     return wch == L'_'; // 0x5F
 }
 
-// Routine Description:
-// - Determines if a character indicates an action that should be taken in the ground state -
-//     These are C0 characters and the C1 [single-character] CSI.
-// Arguments:
-// - wch - Character to check.
-// Return Value:
-// - True if it is. False if it isn't.
-static constexpr bool _isActionableFromGround(const wchar_t wch) noexcept
-{
-    return (wch <= AsciiChars::US) || _isC1ControlCharacter(wch) || _isDelete(wch);
-}
-
 #pragma warning(pop)
 
 // Routine Description:
@@ -385,7 +372,7 @@ static constexpr bool _isActionableFromGround(const wchar_t wch) noexcept
 // - wch - Character to dispatch.
 // Return Value:
 // - <none>
-void StateMachine::_ActionExecute(const wchar_t wch) noexcept
+void StateMachine::_ActionExecute(const wchar_t wch)
 {
     _trace.TraceOnExecute(wch);
     _trace.DispatchSequenceTrace(_SafeExecute([=]() {
@@ -401,7 +388,7 @@ void StateMachine::_ActionExecute(const wchar_t wch) noexcept
 // - wch - Character to dispatch.
 // Return Value:
 // - <none>
-void StateMachine::_ActionExecuteFromEscape(const wchar_t wch) noexcept
+void StateMachine::_ActionExecuteFromEscape(const wchar_t wch)
 {
     _trace.TraceOnExecuteFromEscape(wch);
     _trace.DispatchSequenceTrace(_SafeExecute([=]() {
@@ -415,7 +402,7 @@ void StateMachine::_ActionExecuteFromEscape(const wchar_t wch) noexcept
 // - wch - Character to dispatch.
 // Return Value:
 // - <none>
-void StateMachine::_ActionPrint(const wchar_t wch) noexcept
+void StateMachine::_ActionPrint(const wchar_t wch)
 {
     _trace.TraceOnAction(L"Print");
     _trace.DispatchSequenceTrace(_SafeExecute([=]() {
@@ -444,10 +431,10 @@ void StateMachine::_ActionPrintString(const std::wstring_view string)
 // - wch - Character to dispatch.
 // Return Value:
 // - <none>
-void StateMachine::_ActionEscDispatch(const wchar_t wch) noexcept
+void StateMachine::_ActionEscDispatch(const wchar_t wch)
 {
     _trace.TraceOnAction(L"EscDispatch");
-    _trace.DispatchSequenceTrace(_SafeExecuteWithLog(wch, [=]() {
+    _trace.DispatchSequenceTrace(_SafeExecute([=]() {
         return _engine->ActionEscDispatch(_identifier.Finalize(wch));
     }));
 }
@@ -459,10 +446,10 @@ void StateMachine::_ActionEscDispatch(const wchar_t wch) noexcept
 // - wch - Character to dispatch.
 // Return Value:
 // - <none>
-void StateMachine::_ActionVt52EscDispatch(const wchar_t wch) noexcept
+void StateMachine::_ActionVt52EscDispatch(const wchar_t wch)
 {
     _trace.TraceOnAction(L"Vt52EscDispatch");
-    _trace.DispatchSequenceTrace(_SafeExecuteWithLog(wch, [=]() {
+    _trace.DispatchSequenceTrace(_SafeExecute([=]() {
         return _engine->ActionVt52EscDispatch(_identifier.Finalize(wch), { _parameters.data(), _parameters.size() });
     }));
 }
@@ -474,10 +461,10 @@ void StateMachine::_ActionVt52EscDispatch(const wchar_t wch) noexcept
 // - wch - Character to dispatch.
 // Return Value:
 // - <none>
-void StateMachine::_ActionCsiDispatch(const wchar_t wch) noexcept
+void StateMachine::_ActionCsiDispatch(const wchar_t wch)
 {
     _trace.TraceOnAction(L"CsiDispatch");
-    _trace.DispatchSequenceTrace(_SafeExecuteWithLog(wch, [=]() {
+    _trace.DispatchSequenceTrace(_SafeExecute([=]() {
         return _engine->ActionCsiDispatch(_identifier.Finalize(wch), { _parameters.data(), _parameters.size() });
     }));
 }
@@ -632,10 +619,10 @@ void StateMachine::_ActionOscPut(const wchar_t wch)
 // - wch - Character to dispatch.
 // Return Value:
 // - <none>
-void StateMachine::_ActionOscDispatch(const wchar_t wch) noexcept
+void StateMachine::_ActionOscDispatch(const wchar_t wch)
 {
     _trace.TraceOnAction(L"OscDispatch");
-    _trace.DispatchSequenceTrace(_SafeExecuteWithLog(wch, [=]() {
+    _trace.DispatchSequenceTrace(_SafeExecute([=]() {
         return _engine->ActionOscDispatch(wch, _oscParameter, _oscString);
     }));
 }
@@ -647,10 +634,10 @@ void StateMachine::_ActionOscDispatch(const wchar_t wch) noexcept
 // - wch - Character to dispatch.
 // Return Value:
 // - <none>
-void StateMachine::_ActionSs3Dispatch(const wchar_t wch) noexcept
+void StateMachine::_ActionSs3Dispatch(const wchar_t wch)
 {
     _trace.TraceOnAction(L"Ss3Dispatch");
-    _trace.DispatchSequenceTrace(_SafeExecuteWithLog(wch, [=]() {
+    _trace.DispatchSequenceTrace(_SafeExecute([=]() {
         return _engine->ActionSs3Dispatch(wch, { _parameters.data(), _parameters.size() });
     }));
 }
@@ -662,11 +649,11 @@ void StateMachine::_ActionSs3Dispatch(const wchar_t wch) noexcept
 // - wch - Character to dispatch.
 // Return Value:
 // - <none>
-void StateMachine::_ActionDcsDispatch(const wchar_t wch) noexcept
+void StateMachine::_ActionDcsDispatch(const wchar_t wch)
 {
     _trace.TraceOnAction(L"DcsDispatch");
 
-    const auto success = _SafeExecuteWithLog(wch, [=]() {
+    const auto success = _SafeExecute([=]() {
         _dcsStringHandler = _engine->ActionDcsDispatch(_identifier.Finalize(wch), { _parameters.data(), _parameters.size() });
         // If the returned handler is null, the sequence is not supported.
         return _dcsStringHandler != nullptr;
@@ -919,6 +906,7 @@ void StateMachine::_EnterDcsParam() noexcept
 void StateMachine::_EnterDcsIgnore() noexcept
 {
     _state = VTStates::DcsIgnore;
+    _cachedSequence.reset();
     _trace.TraceStateChange(L"DcsIgnore");
 }
 
@@ -950,6 +938,7 @@ void StateMachine::_EnterDcsIntermediate() noexcept
 void StateMachine::_EnterDcsPassThrough() noexcept
 {
     _state = VTStates::DcsPassThrough;
+    _cachedSequence.reset();
     _trace.TraceStateChange(L"DcsPassThrough");
 }
 
@@ -966,6 +955,7 @@ void StateMachine::_EnterDcsPassThrough() noexcept
 void StateMachine::_EnterSosPmApcString() noexcept
 {
     _state = VTStates::SosPmApcString;
+    _cachedSequence.reset();
     _trace.TraceStateChange(L"SosPmApcString");
 }
 
@@ -978,7 +968,7 @@ void StateMachine::_EnterSosPmApcString() noexcept
 // - wch - Character that triggered the event
 // Return Value:
 // - <none>
-void StateMachine::_EventGround(const wchar_t wch) noexcept
+void StateMachine::_EventGround(const wchar_t wch)
 {
     _trace.TraceOnEvent(L"Ground");
     if (_isC0Code(wch) || _isDelete(wch))
@@ -1093,7 +1083,7 @@ void StateMachine::_EventEscape(const wchar_t wch)
 // - wch - Character that triggered the event
 // Return Value:
 // - <none>
-void StateMachine::_EventEscapeIntermediate(const wchar_t wch) noexcept
+void StateMachine::_EventEscapeIntermediate(const wchar_t wch)
 {
     _trace.TraceOnEvent(L"EscapeIntermediate");
     if (_isC0Code(wch))
@@ -1172,6 +1162,7 @@ void StateMachine::_EventCsiEntry(const wchar_t wch)
     {
         _ActionCsiDispatch(wch);
         _EnterGround();
+        _ExecuteCsiCompleteCallback();
     }
 }
 
@@ -1187,7 +1178,7 @@ void StateMachine::_EventCsiEntry(const wchar_t wch)
 // - wch - Character that triggered the event
 // Return Value:
 // - <none>
-void StateMachine::_EventCsiIntermediate(const wchar_t wch) noexcept
+void StateMachine::_EventCsiIntermediate(const wchar_t wch)
 {
     _trace.TraceOnEvent(L"CsiIntermediate");
     if (_isC0Code(wch))
@@ -1210,6 +1201,7 @@ void StateMachine::_EventCsiIntermediate(const wchar_t wch) noexcept
     {
         _ActionCsiDispatch(wch);
         _EnterGround();
+        _ExecuteCsiCompleteCallback();
     }
 }
 
@@ -1225,7 +1217,7 @@ void StateMachine::_EventCsiIntermediate(const wchar_t wch) noexcept
 // - wch - Character that triggered the event
 // Return Value:
 // - <none>
-void StateMachine::_EventCsiIgnore(const wchar_t wch) noexcept
+void StateMachine::_EventCsiIgnore(const wchar_t wch)
 {
     _trace.TraceOnEvent(L"CsiIgnore");
     if (_isC0Code(wch))
@@ -1291,6 +1283,7 @@ void StateMachine::_EventCsiParam(const wchar_t wch)
     {
         _ActionCsiDispatch(wch);
         _EnterGround();
+        _ExecuteCsiCompleteCallback();
     }
 }
 
@@ -1574,7 +1567,7 @@ void StateMachine::_EventDcsIgnore() noexcept
 // - wch - Character that triggered the event
 // Return Value:
 // - <none>
-void StateMachine::_EventDcsIntermediate(const wchar_t wch) noexcept
+void StateMachine::_EventDcsIntermediate(const wchar_t wch)
 {
     _trace.TraceOnEvent(L"DcsIntermediate");
     if (_isC0Code(wch))
@@ -1713,7 +1706,7 @@ void StateMachine::ProcessCharacter(const wchar_t wch)
         // code points that get translated as C1 controls when that is not their
         // intended use. In order to avoid them triggering unintentional escape
         // sequences, we ignore these characters by default.
-        if (_parserMode.test(Mode::AcceptC1))
+        if (_parserMode.any(Mode::AcceptC1, Mode::AlwaysAcceptC1))
         {
             ProcessCharacter(AsciiChars::ESC);
             ProcessCharacter(_c1To7Bit(wch));
@@ -1786,7 +1779,7 @@ void StateMachine::ProcessCharacter(const wchar_t wch)
 // - <none>
 // Return Value:
 // - true if the engine successfully handled the string.
-bool StateMachine::FlushToTerminal() noexcept
+bool StateMachine::FlushToTerminal()
 {
     auto success{ true };
 
@@ -1815,6 +1808,119 @@ bool StateMachine::FlushToTerminal() noexcept
     return success;
 }
 
+// Disable vectorization-unfriendly warnings.
+#pragma warning(push)
+#pragma warning(disable : 26429) // Symbol '...' is never tested for nullness, it can be marked as not_null (f.23).
+#pragma warning(disable : 26472) // Don't use a static_cast for arithmetic conversions. Use brace initialization, gsl::narrow_cast or gsl::narrow (type.1).
+#pragma warning(disable : 26481) // Don't use pointer arithmetic. Use span instead (bounds.1).
+#pragma warning(disable : 26490) // Don't use reinterpret_cast (type.1).
+
+// Returns true for C0 characters and C1 [single-character] CSI.
+constexpr bool isActionableFromGround(const wchar_t wch) noexcept
+{
+    // This is equivalent to:
+    //   return (wch <= 0x1f) || (wch >= 0x7f && wch <= 0x9f);
+    // It's written like this to get MSVC to emit optimal assembly for findActionableFromGround.
+    // It lacks the ability to turn boolean operators into binary operations and also happens
+    // to fail to optimize the printable-ASCII range check into a subtraction & comparison.
+    return (wch <= 0x1f) | (static_cast<wchar_t>(wch - 0x7f) <= 0x20);
+}
+
+[[msvc::forceinline]] static size_t findActionableFromGroundPlain(const wchar_t* beg, const wchar_t* end, const wchar_t* it) noexcept
+{
+#pragma loop(no_vector)
+    for (; it < end && !isActionableFromGround(*it); ++it)
+    {
+    }
+    return it - beg;
+}
+
+static size_t findActionableFromGround(const wchar_t* data, size_t count) noexcept
+{
+    // The following vectorized code replicates isActionableFromGround which is equivalent to:
+    //   (wch <= 0x1f) || (wch >= 0x7f && wch <= 0x9f)
+    // or rather its more machine friendly equivalent:
+    //   (wch <= 0x1f) | ((wch - 0x7f) <= 0x20)
+#if defined(TIL_SSE_INTRINSICS)
+
+    auto it = data;
+
+    for (const auto end = data + (count & ~size_t{ 7 }); it < end; it += 8)
+    {
+        const auto wch = _mm_loadu_si128(reinterpret_cast<const __m128i*>(it));
+        const auto z = _mm_setzero_si128();
+
+        // Dealing with unsigned numbers in SSE2 is annoying because it has poor support for that.
+        // We'll use subtractions with saturation ("SubS") to work around that. A check like
+        // a < b can be implemented as "max(0, a - b) == 0" and "max(0, a - b)" is what "SubS" is.
+
+        // Check for (wch < 0x20)
+        auto a = _mm_subs_epu16(wch, _mm_set1_epi16(0x1f));
+        // Check for "((wch - 0x7f) <= 0x20)" by adding 0x10000-0x7f, which overflows to a
+        // negative number if "wch >= 0x7f" and then subtracting 0x9f-0x7f with saturation to an
+        // unsigned number (= can't go lower than 0), which results in all numbers up to 0x9f to be 0.
+        auto b = _mm_subs_epu16(_mm_add_epi16(wch, _mm_set1_epi16(static_cast<short>(0xff81))), _mm_set1_epi16(0x20));
+        a = _mm_cmpeq_epi16(a, z);
+        b = _mm_cmpeq_epi16(b, z);
+
+        const auto c = _mm_or_si128(a, b);
+        const auto mask = _mm_movemask_epi8(c);
+
+        if (mask)
+        {
+            unsigned long offset;
+            _BitScanForward(&offset, mask);
+            it += offset / 2;
+            return it - data;
+        }
+    }
+
+    return findActionableFromGroundPlain(data, data + count, it);
+
+#elif defined(TIL_ARM_NEON_INTRINSICS)
+
+    auto it = data;
+    uint64_t mask;
+
+    for (const auto end = data + (count & ~size_t{ 7 }); it < end;)
+    {
+        const auto wch = vld1q_u16(it);
+        const auto a = vcleq_u16(wch, vdupq_n_u16(0x1f));
+        const auto b = vcleq_u16(vsubq_u16(wch, vdupq_n_u16(0x7f)), vdupq_n_u16(0x20));
+        const auto c = vorrq_u16(a, b);
+
+        mask = vgetq_lane_u64(c, 0);
+        if (mask)
+        {
+            goto exitWithMask;
+        }
+        it += 4;
+
+        mask = vgetq_lane_u64(c, 1);
+        if (mask)
+        {
+            goto exitWithMask;
+        }
+        it += 4;
+    }
+
+    return findActionableFromGroundPlain(data, data + count, it);
+
+exitWithMask:
+    unsigned long offset;
+    _BitScanForward64(&offset, mask);
+    it += offset / 16;
+    return it - data;
+
+#else
+
+    return findActionableFromGroundPlain(data, data + count, p);
+
+#endif
+}
+
+#pragma warning(pop)
+
 // Routine Description:
 // - Helper for entry to the state machine. Will take an array of characters
 //     and print as many as it can without encountering a character indicating
@@ -1826,77 +1932,54 @@ bool StateMachine::FlushToTerminal() noexcept
 // - <none>
 void StateMachine::ProcessString(const std::wstring_view string)
 {
-    size_t start = 0;
-    auto current = start;
-
+    size_t i = 0;
     _currentString = string;
     _runOffset = 0;
     _runSize = 0;
 
-    while (current < string.size())
+    if (_state != VTStates::Ground)
     {
-        // The run will be everything from the start INCLUDING the current one
-        // in case we process the current character and it turns into a passthrough
-        // fallback that picks up this _run inside `FlushToTerminal` above.
-        _runOffset = start;
-        _runSize = current - start + 1;
+        // Jump straight to where we need to.
+#pragma warning(suppress : 26438) // Avoid 'goto'(es .76).
+        goto processStringLoopVtStart;
+    }
 
-        if (_processingIndividually)
+    while (i < string.size())
+    {
         {
+            _runOffset = i;
+            // Pointer arithmetic is perfectly fine for our hot path.
+#pragma warning(suppress : 26481) // Don't use pointer arithmetic. Use span instead (bounds.1).)
+            _runSize = findActionableFromGround(string.data() + i, string.size() - i);
+
+            if (_runSize)
+            {
+                _ActionPrintString(_CurrentRun());
+
+                i += _runSize;
+                _runOffset = i;
+                _runSize = 0;
+            }
+        }
+
+    processStringLoopVtStart:
+        if (i >= string.size())
+        {
+            break;
+        }
+
+        do
+        {
+            _runSize++;
+            _processingLastCharacter = i + 1 >= string.size();
             // If we're processing characters individually, send it to the state machine.
-            ProcessCharacter(til::at(string, current));
-            ++current;
-            if (_state == VTStates::Ground) // Then check if we're back at ground. If we are, the next character (pwchCurr)
-            { //   is the start of the next run of characters that might be printable.
-                _processingIndividually = false;
-                start = current;
-            }
-        }
-        else
-        {
-            if (_isActionableFromGround(til::at(string, current))) // If the current char is the start of an escape sequence, or should be executed in ground state...
-            {
-                if (_runSize > 0)
-                {
-                    // Because the run above is composed INCLUDING current, we must
-                    // trim it off here since we just determined it's actionable
-                    // and only pass through everything before it.
-                    _runSize -= 1;
-                    _ActionPrintString(_CurrentRun()); // ... print all the chars leading up to it as part of the run...
-                }
-
-                _processingIndividually = true; // begin processing future characters individually...
-                start = current;
-                continue;
-            }
-            else
-            {
-                ++current; // Otherwise, add this char to the current run to be printed.
-            }
-        }
+            ProcessCharacter(til::at(string, i));
+            ++i;
+        } while (i < string.size() && _state != VTStates::Ground);
     }
 
-    // When we leave the loop, current has been advanced to the length of the string itself
-    // (or one past the array index to the final char) so this `substr` operation doesn't +1
-    // to include the final character (unlike the one inside the top of the loop above.)
-    if (start < string.size())
-    {
-        _runOffset = start;
-        _runSize = std::string::npos;
-    }
-    else
-    {
-        _runSize = 0;
-    }
-
-    const auto run = _CurrentRun();
     // If we're at the end of the string and have remaining un-printed characters,
-    if (!_processingIndividually && !run.empty())
-    {
-        // print the rest of the characters in the string
-        _ActionPrintString(run);
-    }
-    else if (_processingIndividually)
+    if (_state != VTStates::Ground)
     {
         // One of the "weird things" in VT input is the case of something like
         // <kbd>alt+[</kbd>. In VT, that's encoded as `\x1b[`. However, that's
@@ -1916,11 +1999,13 @@ void StateMachine::ProcessString(const std::wstring_view string)
         // last character of the string. For our previous `\x1b[` scenario, that
         // means we'll make sure to call `_ActionEscDispatch('[')`., which will
         // properly decode the string as <kbd>alt+[</kbd>.
+        const auto run = _CurrentRun();
 
         if (_isEngineForInput)
         {
             // Reset our state, and put all but the last char in again.
             ResetState();
+            _processingLastCharacter = false;
             // Chars to flush are [pwchSequenceStart, pwchCurr)
             auto wchIter = run.cbegin();
             while (wchIter < run.cend() - 1)
@@ -1929,6 +2014,7 @@ void StateMachine::ProcessString(const std::wstring_view string)
                 wchIter++;
             }
             // Manually execute the last char [pwchCurr]
+            _processingLastCharacter = true;
             switch (_state)
             {
             case VTStates::Ground:
@@ -1958,11 +2044,13 @@ void StateMachine::ProcessString(const std::wstring_view string)
             // after dispatching the characters
             _EnterGround();
         }
-        else
+        else if (_state != VTStates::SosPmApcString && _state != VTStates::DcsPassThrough && _state != VTStates::DcsIgnore)
         {
             // If the engine doesn't require flushing at the end of the string, we
             // want to cache the partial sequence in case we have to flush the whole
-            // thing to the terminal later.
+            // thing to the terminal later. There is no need to do this if we've
+            // reached one of the string processing states, though, since that data
+            // will be dealt with as soon as it is received.
             if (!_cachedSequence)
             {
                 _cachedSequence.emplace(std::wstring{});
@@ -1972,6 +2060,31 @@ void StateMachine::ProcessString(const std::wstring_view string)
             cachedSequence.append(run);
         }
     }
+}
+
+// Routine Description:
+// - Determines whether the character being processed is the last in the
+//   current output fragment, or there are more still to come. Other parts
+//   of the framework can use this information to work more efficiently.
+// Arguments:
+// - <none>
+// Return Value:
+// - True if we're processing the last character. False if not.
+bool StateMachine::IsProcessingLastCharacter() const noexcept
+{
+    return _processingLastCharacter;
+}
+
+// Routine Description:
+// - Registers a function that will be called once the current CSI action is
+//   complete and the state machine has returned to the ground state.
+// Arguments:
+// - callback - The function that will be called
+// Return Value:
+// - <none>
+void StateMachine::OnCsiComplete(const std::function<void()> callback)
+{
+    _onCsiCompleteCallback = callback;
 }
 
 // Routine Description:
@@ -1992,7 +2105,6 @@ void StateMachine::ResetState() noexcept
 //   into the given size_t. All existing value is moved up by 10.
 // - For example, if your value had 437 and you put in the printable number 2,
 //   this function will update value to 4372.
-// - Clamps to 32767 if it gets too big.
 // Arguments:
 // - wch - Printable character to accumulate into the value (after conversion to number, of course)
 // - value - The value to update with the printable character. See example above.
@@ -2012,10 +2124,14 @@ void StateMachine::_AccumulateTo(const wchar_t wch, VTInt& value) noexcept
 }
 
 template<typename TLambda>
-bool StateMachine::_SafeExecute(TLambda&& lambda) noexcept
+bool StateMachine::_SafeExecute(TLambda&& lambda)
 try
 {
     return lambda();
+}
+catch (const ShutdownException&)
+{
+    throw;
 }
 catch (...)
 {
@@ -2023,13 +2139,23 @@ catch (...)
     return false;
 }
 
-template<typename TLambda>
-bool StateMachine::_SafeExecuteWithLog(const wchar_t wch, TLambda&& lambda) noexcept
+void StateMachine::_ExecuteCsiCompleteCallback()
 {
-    const bool success = _SafeExecute(std::forward<TLambda>(lambda));
-    if (!success)
+    if (_onCsiCompleteCallback)
     {
-        TermTelemetry::Instance().LogFailed(wch);
+        // We need to save the state of the string that we're currently
+        // processing in case the callback injects another string.
+        const auto savedCurrentString = _currentString;
+        const auto savedRunOffset = _runOffset;
+        const auto savedRunSize = _runSize;
+        // We also need to take ownership of the callback function before
+        // executing it so there's no risk of it being run more than once.
+        const auto callback = std::move(_onCsiCompleteCallback);
+        callback();
+        // Once the callback has returned, we can restore the original state
+        // and continue where we left off.
+        _currentString = savedCurrentString;
+        _runOffset = savedRunOffset;
+        _runSize = savedRunSize;
     }
-    return success;
 }

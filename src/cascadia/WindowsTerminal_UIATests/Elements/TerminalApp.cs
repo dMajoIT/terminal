@@ -50,8 +50,8 @@ namespace WindowsTerminal.UIA.Tests.Elements
             this.context = context;
 
             // If running locally, set WTPath to where we can find a loose deployment of Windows Terminal
-            // On the build machines, the scripts lay it out at the appx\ subfolder of the test deployment directory
-            string path = Path.GetFullPath(Path.Combine(context.TestDeploymentDir, @"appx\WindowsTerminal.exe"));
+            // On the build machines, the scripts lay it out at the terminal-0.0.1.0\ subfolder of the test deployment directory
+            string path = Path.GetFullPath(Path.Combine(context.TestDeploymentDir, @"terminal-0.0.1.0\WindowsTerminal.exe"));
             if (context.Properties.Contains("WTPath"))
             {
                 path = (string)context.Properties["WTPath"];
@@ -169,8 +169,8 @@ namespace WindowsTerminal.UIA.Tests.Elements
             if (this.job != IntPtr.Zero)
             {
                 WinBase.TerminateJobObject(this.job, 0);
+                this.job = IntPtr.Zero;
             }
-            this.job = IntPtr.Zero;
         }
     }
 }

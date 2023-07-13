@@ -41,8 +41,8 @@ void CommandNumberPopup::_handleNumber(COOKED_READ_DATA& cookedReadData, const w
                                                       &wch,
                                                       &CharsToWrite,
                                                       &NumSpaces,
-                                                      cookedReadData.OriginalCursorPosition().X,
-                                                      WC_DESTRUCTIVE_BACKSPACE | WC_KEEP_CURSOR_VISIBLE | WC_PRINTABLE_CONTROL_CHARS,
+                                                      cookedReadData.OriginalCursorPosition().x,
+                                                      WC_INTERACTIVE | WC_KEEP_CURSOR_VISIBLE,
                                                       nullptr));
         cookedReadData.ScreenInfo().SetAttributes(realAttributes);
         try
@@ -72,8 +72,8 @@ void CommandNumberPopup::_handleBackspace(COOKED_READ_DATA& cookedReadData) noex
                                                       &backspace,
                                                       &CharsToWrite,
                                                       &NumSpaces,
-                                                      cookedReadData.OriginalCursorPosition().X,
-                                                      WC_DESTRUCTIVE_BACKSPACE | WC_KEEP_CURSOR_VISIBLE | WC_PRINTABLE_CONTROL_CHARS,
+                                                      cookedReadData.OriginalCursorPosition().x,
+                                                      WC_INTERACTIVE | WC_KEEP_CURSOR_VISIBLE,
                                                       nullptr));
         cookedReadData.ScreenInfo().SetAttributes(realAttributes);
         _pop();
@@ -123,7 +123,7 @@ void CommandNumberPopup::_handleReturn(COOKED_READ_DATA& cookedReadData) noexcep
     for (;;)
     {
         Status = _getUserInput(cookedReadData, popupKeys, modifiers, wch);
-        if (!NT_SUCCESS(Status))
+        if (FAILED_NTSTATUS(Status))
         {
             return Status;
         }

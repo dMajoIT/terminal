@@ -70,7 +70,7 @@ public:
 
     static CommandLine& Instance();
 
-    bool IsEditLineEmpty() const;
+    static bool IsEditLineEmpty();
     void Hide(const bool fUpdateFields);
     void Show();
     bool IsVisible() const noexcept;
@@ -82,13 +82,13 @@ public:
     [[nodiscard]] HRESULT StartCommandNumberPopup(COOKED_READ_DATA& cookedReadData);
 
     bool HasPopup() const noexcept;
-    Popup& GetPopup();
+    Popup& GetPopup() const;
 
     void EndCurrentPopup();
     void EndAllPopups();
 
     void DeletePromptAfterCursor(COOKED_READ_DATA& cookedReadData) noexcept;
-    COORD DeleteFromRightOfCursor(COOKED_READ_DATA& cookedReadData) noexcept;
+    til::point DeleteFromRightOfCursor(COOKED_READ_DATA& cookedReadData) noexcept;
 
 protected:
     CommandLine();
@@ -104,17 +104,17 @@ protected:
     void _processHistoryCycling(COOKED_READ_DATA& cookedReadData, const CommandHistory::SearchDirection searchDirection);
     void _setPromptToOldestCommand(COOKED_READ_DATA& cookedReadData);
     void _setPromptToNewestCommand(COOKED_READ_DATA& cookedReadData);
-    COORD _deletePromptBeforeCursor(COOKED_READ_DATA& cookedReadData) noexcept;
-    COORD _moveCursorToEndOfPrompt(COOKED_READ_DATA& cookedReadData) noexcept;
-    COORD _moveCursorToStartOfPrompt(COOKED_READ_DATA& cookedReadData) noexcept;
-    COORD _moveCursorLeftByWord(COOKED_READ_DATA& cookedReadData) noexcept;
-    COORD _moveCursorLeft(COOKED_READ_DATA& cookedReadData);
-    COORD _moveCursorRightByWord(COOKED_READ_DATA& cookedReadData) noexcept;
-    COORD _moveCursorRight(COOKED_READ_DATA& cookedReadData) noexcept;
+    til::point _deletePromptBeforeCursor(COOKED_READ_DATA& cookedReadData) noexcept;
+    til::point _moveCursorToEndOfPrompt(COOKED_READ_DATA& cookedReadData) noexcept;
+    til::point _moveCursorToStartOfPrompt(COOKED_READ_DATA& cookedReadData) noexcept;
+    til::point _moveCursorLeftByWord(COOKED_READ_DATA& cookedReadData) noexcept;
+    til::point _moveCursorLeft(COOKED_READ_DATA& cookedReadData);
+    til::point _moveCursorRightByWord(COOKED_READ_DATA& cookedReadData) noexcept;
+    til::point _moveCursorRight(COOKED_READ_DATA& cookedReadData) noexcept;
     void _insertCtrlZ(COOKED_READ_DATA& cookedReadData) noexcept;
     void _deleteCommandHistory(COOKED_READ_DATA& cookedReadData) noexcept;
     void _fillPromptWithPreviousCommandFragment(COOKED_READ_DATA& cookedReadData) noexcept;
-    COORD _cycleMatchingCommandHistoryToPrompt(COOKED_READ_DATA& cookedReadData);
+    til::point _cycleMatchingCommandHistoryToPrompt(COOKED_READ_DATA& cookedReadData);
 
 #ifdef UNIT_TESTING
     friend class CommandLineTests;
@@ -131,18 +131,8 @@ void DeleteCommandLine(COOKED_READ_DATA& cookedReadData, const bool fUpdateField
 void RedrawCommandLine(COOKED_READ_DATA& cookedReadData);
 
 // Values for WriteChars(), WriteCharsLegacy() dwFlags
-#define WC_DESTRUCTIVE_BACKSPACE 0x01
+#define WC_INTERACTIVE 0x01
 #define WC_KEEP_CURSOR_VISIBLE 0x02
-#define WC_PRINTABLE_CONTROL_CHARS 0x04
-
-// This is no longer necessary. The buffer will always be Unicode. We don't need to perform special work to check if we're in a raster font
-// and convert the entire buffer to match (and all insertions).
-//#define WC_FALSIFY_UNICODE       0x08
-
-#define WC_LIMIT_BACKSPACE 0x10
-//#define WC_NONDESTRUCTIVE_TAB    0x20  -  This is not needed anymore, because the VT code handles tabs internally now.
-//#define WC_NEWLINE_SAVE_X        0x40  -  This has been replaced with an output mode flag instead as it's line discipline behavior that may not necessarily be coupled with VT.
-#define WC_DELAY_EOL_WRAP 0x80
 
 // Word delimiters
 bool IsWordDelim(const wchar_t wch);

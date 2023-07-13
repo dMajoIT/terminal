@@ -5,6 +5,7 @@
 #include "EventArgs.h"
 #include "TitleChangedEventArgs.g.cpp"
 #include "CopyToClipboardEventArgs.g.cpp"
+#include "ContextMenuRequestedEventArgs.g.cpp"
 #include "PasteFromClipboardEventArgs.g.cpp"
 #include "OpenHyperlinkEventArgs.g.cpp"
 #include "NoticeEventArgs.g.cpp"
@@ -13,3 +14,4 @@
 #include "TransparencyChangedEventArgs.g.cpp"
 #include "FoundResultsArgs.g.cpp"
 #include "ShowWindowArgs.g.cpp"
+#include "UpdateSelectionMarkersEventArgs.g.cpp"
